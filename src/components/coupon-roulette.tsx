@@ -92,7 +92,7 @@ export default function CouponRoulette() {
           </p>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col md:flex-row items-center md:items-start justify-center gap-8">
+          <div className="flex flex-col md:flex-row items-center md:items-start justify-center gap-16"> {/* Alterado de gap-8 para gap-16 */}
             <div className="flex-shrink-0">
               <SpinWheel
                 segments={couponSegments}
