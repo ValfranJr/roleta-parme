@@ -28,24 +28,20 @@ export function SpinWheel({
     setIsSpinning(true);
     toast.info("Girando a roleta...");
 
-    // Calculate a random segment to land on
     const randomIndex = Math.floor(Math.random() * segments.length);
     const targetSegment = segments[randomIndex];
 
-    // Calculate the target rotation.
-    // We add multiple full rotations to make it spin visibly.
-    // Then, we subtract half a segment angle to center the pointer on the segment.
-    // We also add a small random offset within the segment for more natural feel.
-    const baseRotation = 360 * 5; // 5 full spins
+    const baseRotation = 360 * 5; // 5 voltas completas para um giro visível
+    // Calcula o ângulo alvo para centralizar o ponteiro no segmento
     const targetAngle = 360 - (randomIndex * segmentAngle + segmentAngle / 2);
+    // Adiciona um pequeno offset aleatório dentro do segmento para um giro mais natural
     const randomOffset =
-      Math.random() * (segmentAngle - 10) - (segmentAngle - 10) / 2; // Small random offset within segment
+      Math.random() * (segmentAngle - 10) - (segmentAngle - 10) / 2;
 
     const newRotation = baseRotation + targetAngle + randomOffset;
 
     setRotation(newRotation);
 
-    // Listen for the end of the CSS transition
     const wheelElement = wheelRef.current;
     if (wheelElement) {
       const onTransitionEnd = () => {
@@ -57,48 +53,67 @@ export function SpinWheel({
     }
   };
 
+  // Cores para o conic-gradient, usando as variáveis de chart do tailwind.config.ts
+  const colors = [
+    "hsl(var(--chart-1))",
+    "hsl(var(--chart-2))",
+    "hsl(var(--chart-3))",
+    "hsl(var(--chart-4))",
+    "hsl(var(--chart-5))",
+    "hsl(250 70% 60%)", // Cor adicional se houver mais segmentos que as cores padrão
+    "hsl(300 60% 50%)",
+    "hsl(100 50% 40%)",
+  ];
+
+  const conicGradient = segments
+    .map((_, index) => {
+      const start = (index / segments.length) * 100;
+      const end = ((index + 1) / segments.length) * 100;
+      const color = colors[index % colors.length];
+      return `${color} ${start}% ${end}%`;
+    })
+    .join(", ");
+
   return (
     <div className="flex flex-col items-center space-y-6">
       <div className="relative w-80 h-80 rounded-full shadow-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
-        {/* Pointer */}
+        {/* Ponteiro */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-b-[30px] border-b-primary z-10" />
 
-        {/* Wheel */}
+        {/* Roleta */}
         <div
           ref={wheelRef}
           className={cn(
             "w-full h-full relative transition-transform duration-[5000ms] ease-out",
             isSpinning && "pointer-events-none"
           )}
-          style={{ transform: `rotate(${rotation}deg)` }}
+          style={{
+            transform: `rotate(${rotation}deg)`,
+            background: `conic-gradient(${conicGradient})`, // Aplica o conic-gradient para as fatias
+          }}
         >
+          {/* Rótulos dos Segmentos */}
           {segments.map((segment, index) => (
             <div
               key={index}
-              className="absolute inset-0 origin-center"
+              className="absolute inset-0 flex items-center justify-center"
               style={{
-                transform: `rotate(${index * segmentAngle}deg)`,
-                clipPath: `polygon(50% 50%, 100% 0px, 200% 99%)`, // This creates a triangle segment
-                backgroundColor: `hsl(${
-                  (index * (360 / segments.length)) % 360
-                }, 70%, 60%)`, // Dynamic colors
+                // Rotaciona o container do texto para o centro do segmento
+                transform: `rotate(${index * segmentAngle + segmentAngle / 2}deg)`,
+                transformOrigin: "center center", // Rotaciona em torno do centro da roleta
               }}
             >
-              <div
-                className="absolute inset-0 flex items-center justify-center text-white font-bold text-sm p-2"
+              <span
+                className="absolute text-white font-bold text-sm whitespace-nowrap text-center"
                 style={{
-                  transform: `rotate(${segmentAngle / 2}deg) translate(50%, -50%) rotate(-${segmentAngle / 2}deg)`,
-                  transformOrigin: "0% 0%",
-                  left: "50%",
+                  // Posiciona o texto para fora do centro e o rotaciona de volta para ficar horizontal
+                  transform: `translateY(-150%) translateX(-50%) rotate(-${index * segmentAngle + segmentAngle / 2}deg)`,
                   top: "50%",
-                  width: "100%",
-                  height: "100%",
+                  left: "50%",
                 }}
               >
-                <span className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-90 whitespace-nowrap">
-                  {segment}
-                </span>
-              </div>
+                {segment}
+              </span>
             </div>
           ))}
         </div>

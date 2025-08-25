@@ -29,7 +29,7 @@ export default function CouponRoulette() {
   const handleSpinEnd = (result: string) => {
     if (result === "NÃO FOI DESSA VEZ") {
       toast.error("Que pena! Não foi dessa vez. Tente novamente!");
-      setWonCoupon(null); // Allow spinning again
+      setWonCoupon(null); // Permite girar novamente
     } else {
       setWonCoupon(result);
       setIsResultDialogOpen(true);
@@ -38,7 +38,7 @@ export default function CouponRoulette() {
 
   const handleCloseResultDialog = () => {
     setIsResultDialogOpen(false);
-    setWonCoupon(null); // Allow spinning again after closing dialog
+    setWonCoupon(null); // Permite girar novamente após fechar o diálogo
   };
 
   return (
@@ -51,14 +51,18 @@ export default function CouponRoulette() {
           </p>
         </CardHeader>
         <CardContent>
-          {!formData ? (
-            <CouponForm onFormSubmit={handleFormSubmit} />
-          ) : (
-            <SpinWheel
-              segments={couponSegments}
-              onSpinEnd={handleSpinEnd}
-              disabled={!!wonCoupon && wonCoupon !== "NÃO FOI DESSA VEZ"} // Disable wheel only if a valid coupon is won
-            />
+          {/* Sempre renderiza a SpinWheel */}
+          <SpinWheel
+            segments={couponSegments}
+            onSpinEnd={handleSpinEnd}
+            // Desabilita se o formulário não foi enviado OU se um cupom válido foi ganho
+            disabled={!formData || (!!wonCoupon && wonCoupon !== "NÃO FOI DESSA VEZ")}
+          />
+          {/* Renderiza o formulário abaixo da roleta se ainda não foi enviado */}
+          {!formData && (
+            <div className="mt-6">
+              <CouponForm onFormSubmit={handleFormSubmit} />
+            </div>
           )}
         </CardContent>
       </Card>
