@@ -43,7 +43,7 @@ export default function CouponRoulette() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-50 dark:bg-gray-900">
-      <Card className="w-full max-w-5xl mx-auto"> {/* Aumentei a largura máxima do card para 5xl */}
+      <Card className="w-full max-w-6xl mx-auto"> {/* Aumentei a largura máxima do card para 6xl para usar mais espaço */}
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-bold">Roleta de Cupons!</CardTitle>
           <p className="text-muted-foreground mt-2">
@@ -62,12 +62,10 @@ export default function CouponRoulette() {
               />
             </div>
 
-            {/* Renderiza o formulário ao lado da roleta se ainda não foi enviado */}
-            {!formData && (
-              <div className="w-full md:w-1/2 max-w-sm"> {/* Ajusta a largura do formulário */}
-                <CouponForm onFormSubmit={handleFormSubmit} />
-              </div>
-            )}
+            {/* Renderiza o formulário sempre visível */}
+            <div className="w-full md:w-1/2 max-w-sm"> {/* Ajusta a largura do formulário */}
+              <CouponForm onFormSubmit={handleFormSubmit} />
+            </div>
           </div>
         </CardContent>
       </Card>
