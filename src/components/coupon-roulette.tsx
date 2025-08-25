@@ -7,7 +7,7 @@ import { CouponResultDialog } from "./coupon-result-dialog";
 import { Toaster } from "@/components/ui/sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { getUsedWhatsappNumbers, addUsedWhatsappNumber } from "@/lib/utils"; // Importar as novas funções
+import { getUsedWhatsappNumbers, addUsedWhatsappNumber } from "@/lib/utils";
 
 const couponSegments = [
   "5% OFF",
@@ -18,11 +18,13 @@ const couponSegments = [
   "30% OFF",
 ];
 
+const STORE_WHATSAPP_NUMBER = "21987581929"; // Número da loja para verificação do cupom
+
 export default function CouponRoulette() {
   const [formData, setFormData] = useState<{ name: string; whatsapp: string } | null>(null);
   const [wonCoupon, setWonCoupon] = useState<string | null>(null);
   const [isResultDialogOpen, setIsResultDialogOpen] = useState(false);
-  const [hasSpun, setHasSpun] = useState(false); // Novo estado para controlar se o número atual já girou
+  const [hasSpun, setHasSpun] = useState(false);
 
   useEffect(() => {
     if (formData?.whatsapp) {
@@ -50,8 +52,8 @@ export default function CouponRoulette() {
 
   const handleSpinEnd = (result: string) => {
     if (formData?.whatsapp) {
-      addUsedWhatsappNumber(formData.whatsapp); // Adiciona o número à lista de usados após o giro
-      setHasSpun(true); // Marca que o número atual já girou
+      addUsedWhatsappNumber(formData.whatsapp);
+      setHasSpun(true);
     }
 
     if (result === "NÃO FOI DESSA VEZ") {
@@ -83,7 +85,6 @@ export default function CouponRoulette() {
               <SpinWheel
                 segments={couponSegments}
                 onSpinEnd={handleSpinEnd}
-                // Desabilita se o formulário não foi enviado OU se o número já girou
                 disabled={!formData || hasSpun}
               />
             </div>
@@ -100,7 +101,8 @@ export default function CouponRoulette() {
           isOpen={isResultDialogOpen}
           onClose={handleCloseResultDialog}
           coupon={wonCoupon}
-          whatsappNumber={formData.whatsapp}
+          whatsappNumber={STORE_WHATSAPP_NUMBER} // Passa o número da loja
+          userName={formData.name} // Passa o nome do usuário
         />
       )}
       <Toaster />
