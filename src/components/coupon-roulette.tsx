@@ -43,7 +43,7 @@ export default function CouponRoulette() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-50 dark:bg-gray-900">
-      <Card className="w-full max-w-md mx-auto">
+      <Card className="w-full max-w-4xl mx-auto"> {/* Aumentei a largura máxima do card */}
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-bold">Roleta de Cupons!</CardTitle>
           <p className="text-muted-foreground mt-2">
@@ -51,19 +51,24 @@ export default function CouponRoulette() {
           </p>
         </CardHeader>
         <CardContent>
-          {/* Sempre renderiza a SpinWheel */}
-          <SpinWheel
-            segments={couponSegments}
-            onSpinEnd={handleSpinEnd}
-            // Desabilita se o formulário não foi enviado OU se um cupom válido foi ganho
-            disabled={!formData || (!!wonCoupon && wonCoupon !== "NÃO FOI DESSA VEZ")}
-          />
-          {/* Renderiza o formulário abaixo da roleta se ainda não foi enviado */}
-          {!formData && (
-            <div className="mt-6">
-              <CouponForm onFormSubmit={handleFormSubmit} />
+          <div className="flex flex-col md:flex-row items-center md:items-start justify-center gap-8">
+            {/* Roleta sempre visível */}
+            <div className="flex-shrink-0"> {/* Garante que a roleta não encolha */}
+              <SpinWheel
+                segments={couponSegments}
+                onSpinEnd={handleSpinEnd}
+                // Desabilita se o formulário não foi enviado OU se um cupom válido foi ganho
+                disabled={!formData || (!!wonCoupon && wonCoupon !== "NÃO FOI DESSA VEZ")}
+              />
             </div>
-          )}
+
+            {/* Renderiza o formulário ao lado da roleta se ainda não foi enviado */}
+            {!formData && (
+              <div className="w-full md:w-1/2 max-w-sm"> {/* Ajusta a largura do formulário */}
+                <CouponForm onFormSubmit={handleFormSubmit} />
+              </div>
+            )}
+          </div>
         </CardContent>
       </Card>
 
