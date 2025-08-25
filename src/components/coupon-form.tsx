@@ -16,6 +16,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
+
+
 const formSchema = z.object({
   name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres."),
   whatsapp: z
@@ -43,7 +45,7 @@ export function CouponForm({ onFormSubmit }: CouponFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className=" space-y-4">
         <FormField
           control={form.control}
           name="name"
