@@ -8,12 +8,12 @@ import { Toaster } from "@/components/ui/sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const couponSegments = [
-  "5% OFF",
   "10% OFF",
-  "20% OFF",
-  "30% OFF",
   "FRETE GRÁTIS",
-  "NÃO FOI DESSA VEZ",
+  "20% OFF",
+  "BRINDE",
+  "15% OFF",
+  "5% OFF",
 ];
 
 export default function CouponRoulette() {
