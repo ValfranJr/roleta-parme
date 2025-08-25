@@ -43,7 +43,7 @@ export default function CouponRoulette() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-50 dark:bg-gray-900">
-      <Card className="w-full max-w-4xl mx-auto"> {/* Aumentei a largura máxima do card */}
+      <Card className="w-full max-w-5xl mx-auto"> {/* Aumentei a largura máxima do card para 5xl */}
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-bold">Roleta de Cupons!</CardTitle>
           <p className="text-muted-foreground mt-2">
