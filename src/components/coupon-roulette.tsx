@@ -6,14 +6,15 @@ import { SpinWheel } from "./spin-wheel";
 import { CouponResultDialog } from "./coupon-result-dialog";
 import { Toaster } from "@/components/ui/sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "sonner";
 
 const couponSegments = [
+  "5% OFF",
   "10% OFF",
   "FRETE GRÁTIS",
   "20% OFF",
-  "BRINDE",
-  "15% OFF",
-  "5% OFF",
+  "NÃO FOI DESSA VEZ",
+  "30% OFF",
 ];
 
 export default function CouponRoulette() {
@@ -26,15 +27,18 @@ export default function CouponRoulette() {
   };
 
   const handleSpinEnd = (result: string) => {
-    setWonCoupon(result);
-    setIsResultDialogOpen(true);
+    if (result === "NÃO FOI DESSA VEZ") {
+      toast.error("Que pena! Não foi dessa vez. Tente novamente!");
+      setWonCoupon(null); // Allow spinning again
+    } else {
+      setWonCoupon(result);
+      setIsResultDialogOpen(true);
+    }
   };
 
   const handleCloseResultDialog = () => {
     setIsResultDialogOpen(false);
-    setWonCoupon(null);
-    // Optionally reset the form or allow another spin
-    // For now, we'll keep the form submitted state
+    setWonCoupon(null); // Allow spinning again after closing dialog
   };
 
   return (
@@ -53,13 +57,13 @@ export default function CouponRoulette() {
             <SpinWheel
               segments={couponSegments}
               onSpinEnd={handleSpinEnd}
-              disabled={!!wonCoupon} // Disable wheel if a coupon has been won
+              disabled={!!wonCoupon && wonCoupon !== "NÃO FOI DESSA VEZ"} // Disable wheel only if a valid coupon is won
             />
           )}
         </CardContent>
       </Card>
 
-      {formData && wonCoupon && (
+      {formData && wonCoupon && wonCoupon !== "NÃO FOI DESSA VEZ" && (
         <CouponResultDialog
           isOpen={isResultDialogOpen}
           onClose={handleCloseResultDialog}

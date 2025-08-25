@@ -11,7 +11,11 @@ interface SpinWheelProps {
   disabled?: boolean;
 }
 
-export function SpinWheel({ segments, onSpinEnd, disabled = false }: SpinWheelProps) {
+export function SpinWheel({
+  segments,
+  onSpinEnd,
+  disabled = false,
+}: SpinWheelProps) {
   const [isSpinning, setIsSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
   const wheelRef = useRef<HTMLDivElement>(null);
@@ -34,7 +38,8 @@ export function SpinWheel({ segments, onSpinEnd, disabled = false }: SpinWheelPr
     // We also add a small random offset within the segment for more natural feel.
     const baseRotation = 360 * 5; // 5 full spins
     const targetAngle = 360 - (randomIndex * segmentAngle + segmentAngle / 2);
-    const randomOffset = Math.random() * (segmentAngle - 10) - (segmentAngle - 10) / 2; // Small random offset within segment
+    const randomOffset =
+      Math.random() * (segmentAngle - 10) - (segmentAngle - 10) / 2; // Small random offset within segment
 
     const newRotation = baseRotation + targetAngle + randomOffset;
 
@@ -73,7 +78,7 @@ export function SpinWheel({ segments, onSpinEnd, disabled = false }: SpinWheelPr
               className="absolute inset-0 origin-center"
               style={{
                 transform: `rotate(${index * segmentAngle}deg)`,
-                clipPath: `polygon(50% 50%, 100% 0, 100% 100%)`, // This creates a triangle segment
+                clipPath: `polygon(50% 50%, 100% 0px, 200% 99%)`, // This creates a triangle segment
                 backgroundColor: `hsl(${
                   (index * (360 / segments.length)) % 360
                 }, 70%, 60%)`, // Dynamic colors
@@ -98,7 +103,11 @@ export function SpinWheel({ segments, onSpinEnd, disabled = false }: SpinWheelPr
           ))}
         </div>
       </div>
-      <Button onClick={handleSpin} disabled={isSpinning || disabled} className="w-48">
+      <Button
+        onClick={handleSpin}
+        disabled={isSpinning || disabled}
+        className="w-48"
+      >
         {isSpinning ? "Girando..." : "Girar Roleta!"}
       </Button>
     </div>
