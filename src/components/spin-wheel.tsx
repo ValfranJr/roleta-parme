@@ -107,7 +107,8 @@ export function SpinWheel({
                 className="absolute text-white font-bold text-sm whitespace-nowrap text-center"
                 style={{
                   // Posiciona o texto para fora do centro e o rotaciona de volta para ficar horizontal
-                  transform: `translateY(-150%) translateX(-50%) rotate(-${index * segmentAngle + segmentAngle / 2}deg)`,
+                  // Ajustei o translateY para uma posição mais adequada
+                  transform: `translateY(-100px) translateX(-50%) rotate(-${index * segmentAngle + segmentAngle / 2}deg)`,
                   top: "50%",
                   left: "50%",
                 }}
