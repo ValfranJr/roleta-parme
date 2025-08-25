@@ -8,6 +8,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { getUsedWhatsappNumbers, addUsedWhatsappNumber } from "@/lib/utils";
+import Image from "next/image"; // Importar o componente Image do Next.js
 
 const couponSegments = [
   "5% OFF",
@@ -71,9 +72,20 @@ export default function CouponRoulette() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-50 dark:bg-gray-900">
+    <div
+      className="flex flex-col items-center justify-center min-h-screen p-4 bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: "url('/banner.png')" }} // Define o banner como background
+    >
       <Card className="w-full max-w-6xl mx-auto">
         <CardHeader className="text-center">
+          <Image
+            src="/logo.png"
+            alt="Parmegiana Crocante Logo"
+            width={200} // Ajuste a largura conforme necessário
+            height={100} // Ajuste a altura conforme necessário
+            className="mx-auto mb-4 h-auto" // Centraliza a logo e mantém a proporção
+            priority // Otimiza o carregamento da logo
+          />
           <CardTitle className="text-3xl font-bold">Roleta de Cupons!</CardTitle>
           <p className="text-muted-foreground mt-2">
             Preencha seus dados para girar a roleta e ganhar um desconto!
@@ -101,8 +113,8 @@ export default function CouponRoulette() {
           isOpen={isResultDialogOpen}
           onClose={handleCloseResultDialog}
           coupon={wonCoupon}
-          whatsappNumber={STORE_WHATSAPP_NUMBER} // Passa o número da loja
-          userName={formData.name} // Passa o nome do usuário
+          whatsappNumber={STORE_WHATSAPP_NUMBER}
+          userName={formData.name}
         />
       )}
       <Toaster />
