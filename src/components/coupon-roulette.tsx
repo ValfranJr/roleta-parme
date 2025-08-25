@@ -73,7 +73,7 @@ export default function CouponRoulette() {
 
   return (
     <div
-      className="flex flex-col items-center justify-center min-h-screen p-4 bg-cover bg-center bg-no-repeat"
+      className="flex flex-col items-center justify-center min-h-screen bg-cover bg-center bg-no-repeat" // Removido o 'p-4' daqui
       style={{ backgroundImage: "url('/banner.png')" }} // Define o banner como background
     >
       <Card className="w-full max-w-6xl mx-auto">
