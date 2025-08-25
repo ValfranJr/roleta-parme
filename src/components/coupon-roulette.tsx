@@ -19,7 +19,7 @@ const couponSegments = [
   "30% OFF",
 ];
 
-const STORE_WHATSAPP_NUMBER = "21987581929"; // Número da loja para verificação do cupom
+const STORE_WHATSAPP_NUMBER = "5521987581929"; // Número da loja para verificação do cupom
 
 export default function CouponRoulette() {
   const [formData, setFormData] = useState<{
