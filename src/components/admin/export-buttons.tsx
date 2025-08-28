@@ -34,12 +34,12 @@ export function ExportButtons({ users }: ExportButtonsProps) {
   const [autoTableLoaded, setAutoTableLoaded] = useState(false);
 
   useEffect(() => {
-    // Dynamically import jsPDF and jspdf-autotable on the client side
     async function loadPdfLibraries() {
       try {
+        // Import jspdf-autotable first to ensure its side effects (extending jsPDF) are applied
+        await import("jspdf-autotable"); 
         const { jsPDF } = await import("jspdf");
-        await import("jspdf-autotable"); // This extends jsPDF
-        setJsPDF(() => jsPDF); // Store the constructor
+        setJsPDF(() => jsPDF);
         setAutoTableLoaded(true);
       } catch (error) {
         console.error("Failed to load PDF libraries:", error);
