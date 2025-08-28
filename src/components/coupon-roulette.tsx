@@ -22,10 +22,7 @@ const couponSegments = [
 const STORE_WHATSAPP_NUMBER = "21987581929"; // Número da loja para verificação do cupom
 
 export default function CouponRoulette() {
-  const [formData, setFormData] = useState<{
-    name: string;
-    whatsapp: string;
-  } | null>(null);
+  const [formData, setFormData] = useState<{ name: string; whatsapp: string } | null>(null);
   const [wonCoupon, setWonCoupon] = useState<string | null>(null);
   const [isResultDialogOpen, setIsResultDialogOpen] = useState(false);
   const [hasSpun, setHasSpun] = useState(false);
@@ -35,9 +32,7 @@ export default function CouponRoulette() {
       const usedNumbers = getUsedWhatsappNumbers();
       if (usedNumbers.includes(formData.whatsapp)) {
         setHasSpun(true);
-        toast.warning(
-          "Este número de WhatsApp já girou a roleta. Apenas um giro por número é permitido."
-        );
+        toast.warning("Este número de WhatsApp já girou a roleta. Apenas um giro por número é permitido.");
       } else {
         setHasSpun(false);
       }
@@ -60,10 +55,27 @@ export default function CouponRoulette() {
     }
   };
 
-  const handleSpinEnd = (result: string) => {
+  const handleSpinEnd = async (result: string) => { // Adicionado 'async' aqui
     if (formData?.whatsapp) {
       addUsedWhatsappNumber(formData.whatsapp);
       setHasSpun(true);
+
+      if (result !== "NÃO FOI DESSA VEZ") {
+        try {
+          // Chamar a nova API para atualizar o cupom ganho no banco de dados
+          await fetch('/api/update-coupon-won', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ whatsapp: formData.whatsapp, coupon: result }),
+          });
+          toast.success("Cupom salvo no seu registro!");
+        } catch (error) {
+          console.error("Erro ao salvar o cupom no banco de dados:", error);
+          toast.error("Erro ao salvar o cupom. Por favor, anote-o!");
+        }
+      }
     }
 
     if (result === "NÃO FOI DESSA VEZ") {
@@ -88,16 +100,14 @@ export default function CouponRoulette() {
       <Card className="w-full max-w-6xl mx-auto">
         <CardHeader className="text-center">
           <Image
-            src="/logoF.png"
+            src="/logo.png"
             alt="Parmegiana Crocante Logo"
             width={200}
             height={100}
             className="mx-auto mb-4 h-auto"
             priority
           />
-          <CardTitle className="text-3xl font-bold">
-            Roleta de Cupons!
-          </CardTitle>
+          <CardTitle className="text-3xl font-bold">Roleta de Cupons!</CardTitle>
           <p className="text-muted-foreground mt-2">
             Preencha seus dados para girar a roleta e ganhar um desconto!
           </p>
@@ -113,10 +123,7 @@ export default function CouponRoulette() {
             </div>
 
             <div className="w-full md:w-1/2 max-w-sm">
-              <CouponForm
-                onFormSubmit={handleFormSubmit}
-                onDbSubmitSuccess={handleDbSubmitSuccess}
-              />
+              <CouponForm onFormSubmit={handleFormSubmit} onDbSubmitSuccess={handleDbSubmitSuccess} />
             </div>
           </div>
         </CardContent>
