@@ -22,7 +22,10 @@ const couponSegments = [
 const STORE_WHATSAPP_NUMBER = "21987581929"; // Número da loja para verificação do cupom
 
 export default function CouponRoulette() {
-  const [formData, setFormData] = useState<{ name: string; whatsapp: string } | null>(null);
+  const [formData, setFormData] = useState<{
+    name: string;
+    whatsapp: string;
+  } | null>(null);
   const [wonCoupon, setWonCoupon] = useState<string | null>(null);
   const [isResultDialogOpen, setIsResultDialogOpen] = useState(false);
   const [hasSpun, setHasSpun] = useState(false);
@@ -32,7 +35,9 @@ export default function CouponRoulette() {
       const usedNumbers = getUsedWhatsappNumbers();
       if (usedNumbers.includes(formData.whatsapp)) {
         setHasSpun(true);
-        toast.warning("Este número de WhatsApp já girou a roleta. Apenas um giro por número é permitido.");
+        toast.warning(
+          "Este número de WhatsApp já girou a roleta. Apenas um giro por número é permitido."
+        );
       } else {
         setHasSpun(false);
       }
@@ -83,14 +88,16 @@ export default function CouponRoulette() {
       <Card className="w-full max-w-6xl mx-auto">
         <CardHeader className="text-center">
           <Image
-            src="/logo.png"
+            src="/logoF.png"
             alt="Parmegiana Crocante Logo"
             width={200}
             height={100}
             className="mx-auto mb-4 h-auto"
             priority
           />
-          <CardTitle className="text-3xl font-bold">Roleta de Cupons!</CardTitle>
+          <CardTitle className="text-3xl font-bold">
+            Roleta de Cupons!
+          </CardTitle>
           <p className="text-muted-foreground mt-2">
             Preencha seus dados para girar a roleta e ganhar um desconto!
           </p>
@@ -106,7 +113,10 @@ export default function CouponRoulette() {
             </div>
 
             <div className="w-full md:w-1/2 max-w-sm">
-              <CouponForm onFormSubmit={handleFormSubmit} onDbSubmitSuccess={handleDbSubmitSuccess} />
+              <CouponForm
+                onFormSubmit={handleFormSubmit}
+                onDbSubmitSuccess={handleDbSubmitSuccess}
+              />
             </div>
           </div>
         </CardContent>
