@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Download } from "lucide-react";
@@ -10,12 +10,6 @@ import { ptBR } from "date-fns/locale";
 // Import client-side libraries
 import { stringify } from "csv-stringify/sync";
 import * as XLSX from "xlsx";
-
-// Define types for jsPDF and autoTable to avoid TypeScript errors before dynamic import
-type JsPDF = typeof import("jspdf").jsPDF;
-interface AutoTable {
-  (options: any): void;
-}
 
 interface CouponUser {
   id: number;
@@ -30,27 +24,7 @@ interface ExportButtonsProps {
 }
 
 export function ExportButtons({ users }: ExportButtonsProps) {
-  const [jsPDF, setJsPDF] = useState<JsPDF | null>(null);
-  const [autoTableLoaded, setAutoTableLoaded] = useState(false);
-
-  useEffect(() => {
-    async function loadPdfLibraries() {
-      try {
-        // Import jspdf-autotable first to ensure its side effects (extending jsPDF) are applied
-        await import("jspdf-autotable"); 
-        const { jsPDF } = await import("jspdf");
-        setJsPDF(() => jsPDF);
-        setAutoTableLoaded(true);
-      } catch (error) {
-        console.error("Failed to load PDF libraries:", error);
-        toast.error("Erro ao carregar funcionalidades de PDF.");
-      }
-    }
-
-    if (typeof window !== "undefined") {
-      loadPdfLibraries();
-    }
-  }, []);
+  const [isPdfLoading, setIsPdfLoading] = useState(false); // Novo estado para o carregamento do PDF
 
   const formattedData = users.map(user => ({
     ID: user.id,
@@ -72,9 +46,9 @@ export function ExportButtons({ users }: ExportButtonsProps) {
       const link = document.createElement("a");
       link.setAttribute("href", url);
       link.setAttribute("download", "coupon_users.csv");
-      document.body.appendChild(link); // Required for Firefox
+      document.body.appendChild(link); // Necessário para Firefox
       link.click();
-      document.body.removeChild(link); // Clean up
+      document.body.removeChild(link); // Limpar
       toast.success("Dados exportados para CSV!");
     } catch (error) {
       console.error("Error exporting to CSV:", error);
@@ -99,22 +73,24 @@ export function ExportButtons({ users }: ExportButtonsProps) {
     }
   };
 
-  const exportToPdf = () => {
-    if (!jsPDF || !autoTableLoaded) {
-      toast.info("As bibliotecas de PDF ainda estão carregando. Por favor, tente novamente em um momento.");
+  const exportToPdf = async () => {
+    if (formattedData.length === 0) {
+      toast.info("Não há dados para exportar para PDF.");
       return;
     }
 
+    setIsPdfLoading(true);
     try {
-      if (formattedData.length === 0) {
-        toast.info("Não há dados para exportar para PDF.");
-        return;
-      }
+      // Importar jspdf-autotable primeiro para garantir que seus efeitos colaterais sejam aplicados
+      await import("jspdf-autotable"); 
+      // Em seguida, importar jsPDF
+      const { jsPDF } = await import("jspdf");
+
       const doc = new jsPDF();
       const headers = Object.keys(formattedData[0]);
       const data = formattedData.map(row => Object.values(row));
 
-      // Cast doc to any to access autoTable, as it's added dynamically
+      // Usar autoTable no objeto doc
       (doc as any).autoTable({
         head: [headers],
         body: data,
@@ -129,6 +105,8 @@ export function ExportButtons({ users }: ExportButtonsProps) {
     } catch (error) {
       console.error("Error exporting to PDF:", error);
       toast.error("Falha ao exportar para PDF.");
+    } finally {
+      setIsPdfLoading(false);
     }
   };
 
@@ -140,8 +118,8 @@ export function ExportButtons({ users }: ExportButtonsProps) {
       <Button onClick={exportToXlsx} variant="outline" className="flex items-center gap-1">
         <Download className="h-4 w-4" /> XLSX
       </Button>
-      <Button onClick={exportToPdf} variant="outline" className="flex items-center gap-1" disabled={!jsPDF || !autoTableLoaded}>
-        <Download className="h-4 w-4" /> PDF
+      <Button onClick={exportToPdf} variant="outline" className="flex items-center gap-1" disabled={isPdfLoading}>
+        {isPdfLoading ? "Carregando..." : <><Download className="h-4 w-4" /> PDF</>}
       </Button>
     </div>
   );
