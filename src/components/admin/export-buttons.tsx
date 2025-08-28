@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Download } from "lucide-react";
@@ -10,8 +10,12 @@ import { ptBR } from "date-fns/locale";
 // Import client-side libraries
 import { stringify } from "csv-stringify/sync";
 import * as XLSX from "xlsx";
-import jsPDF from "jspdf";
-import "jspdf-autotable"; // This extends jsPDF
+
+// Define types for jsPDF and autoTable to avoid TypeScript errors before dynamic import
+type JsPDF = typeof import("jspdf").jsPDF;
+interface AutoTable {
+  (options: any): void;
+}
 
 interface CouponUser {
   id: number;
@@ -26,6 +30,27 @@ interface ExportButtonsProps {
 }
 
 export function ExportButtons({ users }: ExportButtonsProps) {
+  const [jsPDF, setJsPDF] = useState<JsPDF | null>(null);
+  const [autoTableLoaded, setAutoTableLoaded] = useState(false);
+
+  useEffect(() => {
+    // Dynamically import jsPDF and jspdf-autotable on the client side
+    async function loadPdfLibraries() {
+      try {
+        const { jsPDF } = await import("jspdf");
+        await import("jspdf-autotable"); // This extends jsPDF
+        setJsPDF(() => jsPDF); // Store the constructor
+        setAutoTableLoaded(true);
+      } catch (error) {
+        console.error("Failed to load PDF libraries:", error);
+        toast.error("Erro ao carregar funcionalidades de PDF.");
+      }
+    }
+
+    if (typeof window !== "undefined") {
+      loadPdfLibraries();
+    }
+  }, []);
 
   const formattedData = users.map(user => ({
     ID: user.id,
@@ -75,6 +100,11 @@ export function ExportButtons({ users }: ExportButtonsProps) {
   };
 
   const exportToPdf = () => {
+    if (!jsPDF || !autoTableLoaded) {
+      toast.info("As bibliotecas de PDF ainda estão carregando. Por favor, tente novamente em um momento.");
+      return;
+    }
+
     try {
       if (formattedData.length === 0) {
         toast.info("Não há dados para exportar para PDF.");
@@ -84,6 +114,7 @@ export function ExportButtons({ users }: ExportButtonsProps) {
       const headers = Object.keys(formattedData[0]);
       const data = formattedData.map(row => Object.values(row));
 
+      // Cast doc to any to access autoTable, as it's added dynamically
       (doc as any).autoTable({
         head: [headers],
         body: data,
@@ -109,7 +140,7 @@ export function ExportButtons({ users }: ExportButtonsProps) {
       <Button onClick={exportToXlsx} variant="outline" className="flex items-center gap-1">
         <Download className="h-4 w-4" /> XLSX
       </Button>
-      <Button onClick={exportToPdf} variant="outline" className="flex items-center gap-1">
+      <Button onClick={exportToPdf} variant="outline" className="flex items-center gap-1" disabled={!jsPDF || !autoTableLoaded}>
         <Download className="h-4 w-4" /> PDF
       </Button>
     </div>
