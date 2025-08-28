@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { LogoutButton } from '@/components/admin/logout-button';
+import { ExportButtons } from '@/components/admin/export-buttons'; // New import
 
 interface CouponUser {
   id: number;
@@ -32,7 +33,10 @@ export default async function AdminDashboardPage() {
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Painel do Administrador</h1>
-        <LogoutButton />
+        <div className="flex gap-4 items-center"> {/* Group buttons and align them */}
+          <ExportButtons users={users} /> {/* Add export buttons here */}
+          <LogoutButton />
+        </div>
       </div>
 
       <Card className="w-full">
