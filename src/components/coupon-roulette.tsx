@@ -19,13 +19,10 @@ const couponSegments = [
   "30% OFF",
 ];
 
-const STORE_WHATSAPP_NUMBER = "5521987581929"; // Número da loja para verificação do cupom
+const STORE_WHATSAPP_NUMBER = "21987581929"; // Número da loja para verificação do cupom
 
 export default function CouponRoulette() {
-  const [formData, setFormData] = useState<{
-    name: string;
-    whatsapp: string;
-  } | null>(null);
+  const [formData, setFormData] = useState<{ name: string; whatsapp: string } | null>(null);
   const [wonCoupon, setWonCoupon] = useState<string | null>(null);
   const [isResultDialogOpen, setIsResultDialogOpen] = useState(false);
   const [hasSpun, setHasSpun] = useState(false);
@@ -35,9 +32,7 @@ export default function CouponRoulette() {
       const usedNumbers = getUsedWhatsappNumbers();
       if (usedNumbers.includes(formData.whatsapp)) {
         setHasSpun(true);
-        toast.warning(
-          "Este número de WhatsApp já girou a roleta. Apenas um giro por número é permitido."
-        );
+        toast.warning("Este número de WhatsApp já girou a roleta. Apenas um giro por número é permitido.");
       } else {
         setHasSpun(false);
       }
@@ -46,15 +41,17 @@ export default function CouponRoulette() {
 
   const handleFormSubmit = (data: { name: string; whatsapp: string }) => {
     setFormData(data);
+    // The check for used numbers is now handled by onDbSubmitSuccess
+  };
+
+  const handleDbSubmitSuccess = (whatsapp: string) => {
+    // This function is called after the form data is successfully saved to the DB
+    // or if the number is already registered.
     const usedNumbers = getUsedWhatsappNumbers();
-    if (usedNumbers.includes(data.whatsapp)) {
+    if (usedNumbers.includes(whatsapp)) {
       setHasSpun(true);
-      toast.warning(
-        "Este número de WhatsApp já girou a roleta. Apenas um giro por número é permitido."
-      );
     } else {
       setHasSpun(false);
-      toast.success("Dados enviados! Agora você pode girar a roleta.");
     }
   };
 
@@ -80,39 +77,36 @@ export default function CouponRoulette() {
 
   return (
     <div
-      className="flex flex-col items-center justify-center min-h-screen bg-cover bg-center bg-no-repeat" // Removido o 'p-4' daqui
-      style={{ backgroundImage: "url('/banner.png')" }} // Define o banner como background
+      className="flex flex-col items-center justify-center min-h-screen bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: "url('/banner.png')" }}
     >
       <Card className="w-full max-w-6xl mx-auto">
         <CardHeader className="text-center">
           <Image
-            src="/logoF.png"
+            src="/logo.png"
             alt="Parmegiana Crocante Logo"
-            width={300} // Ajuste a largura conforme necessário
-            height={200} // Ajuste a altura conforme necessário
-            className="mx-auto mb-2 h-auto" // Centraliza a logo e mantém a proporção
-            priority // Otimiza o carregamento da logo
+            width={200}
+            height={100}
+            className="mx-auto mb-4 h-auto"
+            priority
           />
-          <CardTitle className="text-3xl font-bold">
-            Roleta de Cupons!
-          </CardTitle>
+          <CardTitle className="text-3xl font-bold">Roleta de Cupons!</CardTitle>
           <p className="text-muted-foreground mt-2">
             Preencha seus dados para girar a roleta e ganhar um desconto!
           </p>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col md:flex-row items-center md:items-start justify-center gap-16">
-
-            {/* Alterado de gap-8 para gap-16 */}
-            <div className="flex-shrink-0 ">
+            <div className="flex-shrink-0">
               <SpinWheel
                 segments={couponSegments}
                 onSpinEnd={handleSpinEnd}
                 disabled={!formData || hasSpun}
               />
             </div>
-            <div className="w-full md:w-1/2 max-w-sm ">
-              <CouponForm onFormSubmit={handleFormSubmit} />
+
+            <div className="w-full md:w-1/2 max-w-sm">
+              <CouponForm onFormSubmit={handleFormSubmit} onDbSubmitSuccess={handleDbSubmitSuccess} />
             </div>
           </div>
         </CardContent>

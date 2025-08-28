@@ -16,8 +16,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
-
-
 const formSchema = z.object({
   name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres."),
   whatsapp: z
@@ -27,9 +25,10 @@ const formSchema = z.object({
 
 interface CouponFormProps {
   onFormSubmit: (data: { name: string; whatsapp: string }) => void;
+  onDbSubmitSuccess: (whatsapp: string) => void; // New prop for successful DB submission
 }
 
-export function CouponForm({ onFormSubmit }: CouponFormProps) {
+export function CouponForm({ onFormSubmit, onDbSubmitSuccess }: CouponFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -38,9 +37,33 @@ export function CouponForm({ onFormSubmit }: CouponFormProps) {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    onFormSubmit(values);
-    toast.success("Dados enviados! Agora você pode girar a roleta.");
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const response = await fetch('/api/submit-coupon-data', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok && response.status !== 200) { // 200 for already registered
+        throw new Error(data.error || 'Failed to save data');
+      }
+
+      if (response.status === 200 && data.message === 'WhatsApp number already registered') {
+        toast.warning("Este número de WhatsApp já está registrado. Você pode girar a roleta.");
+      } else {
+        toast.success("Dados enviados e salvos! Agora você pode girar a roleta.");
+      }
+      onFormSubmit(values);
+      onDbSubmitSuccess(values.whatsapp); // Notify parent about successful DB submission
+    } catch (error) {
+      console.error("Error submitting form to DB:", error);
+      toast.error("Erro ao salvar seus dados. Tente novamente.");
+    }
   }
 
   return (
