@@ -3,7 +3,7 @@ import CouponRoulette from "@/components/coupon-roulette";
 
 export const metadata = {
   title: "Roleta de Cupons",
-  description: "Participe da roleta de cupons da Parmegiana Crocante!",
+  description: "Participe da roleta de cupons da nossa loja!.",
 };
 
 export default function Home() {

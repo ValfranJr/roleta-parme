@@ -6,8 +6,8 @@ export async function POST(request: Request) {
     const { username, password } = await request.json();
 
     // Use environment variables for credentials in a real application
-    const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
-    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "password123";
+    const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
+    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
     if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
       await setAdminSession(username);

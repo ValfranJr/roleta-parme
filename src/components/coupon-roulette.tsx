@@ -8,7 +8,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { getUsedWhatsappNumbers, addUsedWhatsappNumber } from "@/lib/utils";
-import Image from "next/image"; // Importar o componente Image do Next.js
+import Image from "next/image";
 
 const couponSegments = [
   "5% OFF",
@@ -19,7 +19,11 @@ const couponSegments = [
   "30% OFF",
 ];
 
-const STORE_WHATSAPP_NUMBER = "21987581929"; // Número da loja para verificação do cupom
+const STORE_WHATSAPP_NUMBER =
+  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || undefined;
+const bannerImage = process.env.NEXT_PUBLIC_BACKGROUND_IMAGE || undefined;
+const logoImage = process.env.NEXT_PUBLIC_LOGO_IMAGE || undefined;
+const logoText = process.env.NEXT_PUBLIC_LOGO_TEXT || undefined;
 
 export default function CouponRoulette() {
   const [formData, setFormData] = useState<{
@@ -46,12 +50,9 @@ export default function CouponRoulette() {
 
   const handleFormSubmit = (data: { name: string; whatsapp: string }) => {
     setFormData(data);
-    // The check for used numbers is now handled by onDbSubmitSuccess
   };
 
   const handleDbSubmitSuccess = (whatsapp: string) => {
-    // This function is called after the form data is successfully saved to the DB
-    // or if the number is already registered.
     const usedNumbers = getUsedWhatsappNumbers();
     if (usedNumbers.includes(whatsapp)) {
       setHasSpun(true);
@@ -61,14 +62,12 @@ export default function CouponRoulette() {
   };
 
   const handleSpinEnd = async (result: string) => {
-    // Adicionado 'async' aqui
     if (formData?.whatsapp) {
       addUsedWhatsappNumber(formData.whatsapp);
       setHasSpun(true);
 
       if (result !== "NÃO FOI DESSA VEZ") {
         try {
-          // Chamar a nova API para atualizar o cupom ganho no banco de dados
           await fetch("/api/update-coupon-won", {
             method: "POST",
             headers: {
@@ -104,18 +103,22 @@ export default function CouponRoulette() {
   return (
     <div
       className="flex flex-col items-center justify-center min-h-screen bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: "url('/banner.png')" }}
+      style={{
+        backgroundImage: bannerImage ? `url(${bannerImage})` : undefined,
+      }}
     >
       <Card className="w-full max-w-6xl mx-auto">
         <CardHeader className="text-center">
-          <Image
-            src="/logoF.png"
-            alt="Parmegiana Crocante Logo"
-            width={200}
-            height={100}
-            className="mx-auto mb-4 h-auto"
-            priority
-          />
+          {logoImage && ( // Verifica se o logoImage está definido
+            <Image
+              src={logoImage}
+              alt={logoText || "Logo"}
+              width={200}
+              height={100}
+              className="mx-auto mb-4 h-auto"
+              priority
+            />
+          )}
           <CardTitle className="text-3xl font-bold">
             Roleta de Cupons!
           </CardTitle>

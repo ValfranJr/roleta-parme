@@ -17,7 +17,7 @@ interface CouponResultDialogProps {
   isOpen: boolean;
   onClose: () => void;
   coupon: string;
-  whatsappNumber: string; // Este agora será o número da loja
+  whatsappNumber: string | undefined;
   userName: string; // Adicionado para incluir o nome do usuário na mensagem
 }
 
@@ -42,7 +42,8 @@ export function CouponResultDialog({
             🎉 Parabéns! 🎉
           </AlertDialogTitle>
           <AlertDialogDescription className="text-center text-lg mt-4">
-            Você ganhou um cupom de desconto! Clique abaixo para enviá-lo à loja.
+            Você ganhou um cupom de desconto! Clique abaixo para enviá-lo à
+            loja.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div className="text-center my-6">
@@ -54,13 +55,20 @@ export function CouponResultDialog({
           </p>
         </div>
         <AlertDialogFooter className="flex flex-col sm:flex-row sm:justify-center gap-3">
-          <Button asChild className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white">
+          <Button
+            asChild
+            className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white"
+          >
             <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
               <Share2 className="mr-2 h-4 w-4" /> Enviar Cupom via WhatsApp
             </a>
           </Button>
           <AlertDialogCancel asChild>
-            <Button onClick={onClose} className="w-full sm:w-auto" variant="outline">
+            <Button
+              onClick={onClose}
+              className="w-full sm:w-auto"
+              variant="outline"
+            >
               Fechar
             </Button>
           </AlertDialogCancel>
