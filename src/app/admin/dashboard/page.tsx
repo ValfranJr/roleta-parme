@@ -1,11 +1,24 @@
-import { requireAdminAuth } from '@/lib/auth';
-import { client } from '@/lib/db';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { LogoutButton } from '@/components/admin/logout-button';
-import { ExportButtons } from '@/components/admin/export-buttons'; // New import
+import { requireAdminAuth } from "@/lib/auth";
+import { query } from "@/lib/db";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { LogoutButton } from "@/components/admin/logout-button";
+import { ExportButtons } from "@/components/admin/export-buttons"; // New import
 
 interface CouponUser {
   id: number;
@@ -16,24 +29,30 @@ interface CouponUser {
 }
 
 export default async function AdminDashboardPage() {
-  requireAdminAuth(); // Protect this page
+  await requireAdminAuth();
 
   let users: CouponUser[] = [];
   let error: string | null = null;
 
   try {
-    const result = await client.query('SELECT id, name, whatsapp, coupon_won, created_at FROM coupon_users ORDER BY created_at DESC');
+    const result = await query(
+      "SELECT id, name, whatsapp, coupon_won, created_at FROM coupon_users ORDER BY created_at DESC"
+    );
     users = result.rows;
   } catch (err) {
-    console.error('Error fetching coupon users for dashboard:', err);
-    error = 'Falha ao carregar os dados dos usuários.';
+    console.error("Error fetching coupon users for dashboard:", err);
+    error = "Falha ao carregar os dados dos usuários.";
   }
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Painel do Administrador</h1>
-        <div className="flex gap-4 items-center"> {/* Group buttons and align them */}
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+          Painel do Administrador
+        </h1>
+        <div className="flex gap-4 items-center">
+          {" "}
+          {/* Group buttons and align them */}
           <ExportButtons users={users} /> {/* Add export buttons here */}
           <LogoutButton />
         </div>
@@ -42,13 +61,17 @@ export default async function AdminDashboardPage() {
       <Card className="w-full">
         <CardHeader>
           <CardTitle>Usuários da Roleta</CardTitle>
-          <CardDescription>Lista de todos os usuários que preencheram o formulário.</CardDescription>
+          <CardDescription>
+            Lista de todos os usuários que preencheram o formulário.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {error ? (
             <p className="text-red-500 text-center">{error}</p>
           ) : users.length === 0 ? (
-            <p className="text-center text-muted-foreground">Nenhum usuário registrado ainda.</p>
+            <p className="text-center text-muted-foreground">
+              Nenhum usuário registrado ainda.
+            </p>
           ) : (
             <div className="overflow-x-auto">
               <Table>
@@ -67,8 +90,12 @@ export default async function AdminDashboardPage() {
                       <TableCell>{user.id}</TableCell>
                       <TableCell>{user.name}</TableCell>
                       <TableCell>{user.whatsapp}</TableCell>
-                      <TableCell>{user.coupon_won || 'Não girou'}</TableCell>
-                      <TableCell>{format(new Date(user.created_at), 'dd/MM/yyyy HH:mm', { locale: ptBR })}</TableCell>
+                      <TableCell>{user.coupon_won || "Não girou"}</TableCell>
+                      <TableCell>
+                        {format(new Date(user.created_at), "dd/MM/yyyy HH:mm", {
+                          locale: ptBR,
+                        })}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
