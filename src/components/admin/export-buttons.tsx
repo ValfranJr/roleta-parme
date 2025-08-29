@@ -126,7 +126,7 @@ export function ExportButtons({ users }: ExportButtonsProps) {
         // Adicionar dados
         formattedData.forEach((row, index) => {
           if (yPosition > 280) {
-            doc.addPage();
+            (doc as any).addPage();
             yPosition = 20;
           }
 
