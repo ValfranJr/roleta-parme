@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { CouponForm } from "./coupon-form";
 import { SpinWheel } from "./spin-wheel";
 import { CouponResultDialog } from "./coupon-result-dialog";
@@ -10,14 +10,14 @@ import { toast } from "sonner";
 import { getUsedWhatsappNumbers, addUsedWhatsappNumber } from "@/lib/utils";
 import Image from "next/image";
 
-const couponSegments = [
-  "5% OFF",
-  "10% OFF",
-  "FRETE GRÁTIS",
-  "20% OFF",
-  "NÃO FOI DESSA VEZ",
-  "30% OFF",
-];
+// const couponSegments = [
+//   "5% OFF",
+//   "10% OFF",
+//   "FRETE GRÁTIS",
+//   "20% OFF",
+//   "NÃO FOI DESSA VEZ",
+//   "30% OFF",
+// ];
 
 const STORE_WHATSAPP_NUMBER =
   process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || undefined;
@@ -26,6 +26,10 @@ const logoImage = process.env.NEXT_PUBLIC_LOGO_IMAGE || undefined;
 const logoText = process.env.NEXT_PUBLIC_LOGO_TEXT || undefined;
 
 export default function CouponRoulette() {
+  const couponSegments = useMemo(() => {
+    return JSON.parse(process.env.NEXT_PUBLIC_COUPON_SEGMENTS as string);
+  }, []);
+
   const [formData, setFormData] = useState<{
     name: string;
     whatsapp: string;

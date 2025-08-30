@@ -5,8 +5,6 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-
-
 interface SpinWheelProps {
   segments: string[];
   onSpinEnd: (result: string) => void;
@@ -105,8 +103,9 @@ export function SpinWheel({
                 transformOrigin: "center center", // Rotaciona em torno do centro da roleta
               }}
             >
+              {/* Texto do Segmento */}
               <span
-                className="absolute text-white font-bold text-sm whitespace-nowrap text-center"
+                className="absolute text-white font-bold text-sm text-center"
                 style={{
                   // Posiciona o texto para fora do centro e o rotaciona de volta para ficar horizontal
                   // Ajustei o translateY para uma posição mais adequada

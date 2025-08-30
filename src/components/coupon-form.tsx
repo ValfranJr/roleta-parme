@@ -16,11 +16,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
+const promoText = process.env.NEXT_PUBLIC_PROMO_TEXT;
+
 const formSchema = z.object({
   name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres."),
   whatsapp: z
     .string()
-    .regex(/^\d{10,11}$/, "Número de WhatsApp inválido (apenas números, com DDD)."),
+    .regex(
+      /^\d{10,11}$/,
+      "Número de WhatsApp inválido (apenas números, com DDD)."
+    ),
 });
 
 interface CouponFormProps {
@@ -28,7 +33,10 @@ interface CouponFormProps {
   onDbSubmitSuccess: (whatsapp: string) => void; // New prop for successful DB submission
 }
 
-export function CouponForm({ onFormSubmit, onDbSubmitSuccess }: CouponFormProps) {
+export function CouponForm({
+  onFormSubmit,
+  onDbSubmitSuccess,
+}: CouponFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -39,24 +47,32 @@ export function CouponForm({ onFormSubmit, onDbSubmitSuccess }: CouponFormProps)
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const response = await fetch('/api/submit-coupon-data', {
-        method: 'POST',
+      const response = await fetch("/api/submit-coupon-data", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(values),
       });
 
       const data = await response.json();
 
-      if (!response.ok && response.status !== 200) { // 200 for already registered
-        throw new Error(data.error || 'Failed to save data');
+      if (!response.ok && response.status !== 200) {
+        // 200 for already registered
+        throw new Error(data.error || "Failed to save data");
       }
 
-      if (response.status === 200 && data.message === 'WhatsApp number already registered') {
-        toast.warning("Este número de WhatsApp já está registrado. Você pode girar a roleta.");
+      if (
+        response.status === 200 &&
+        data.message === "WhatsApp number already registered"
+      ) {
+        toast.warning(
+          "Este número de WhatsApp já está registrado. Você pode girar a roleta."
+        );
       } else {
-        toast.success("Dados enviados e salvos! Agora você pode girar a roleta.");
+        toast.success(
+          "Dados enviados e salvos! Agora você pode girar a roleta."
+        );
       }
       onFormSubmit(values);
       onDbSubmitSuccess(values.whatsapp); // Notify parent about successful DB submission
@@ -99,6 +115,11 @@ export function CouponForm({ onFormSubmit, onDbSubmitSuccess }: CouponFormProps)
           Liberar Roleta
         </Button>
       </form>
+      {promoText && (
+        <h1 className="mt-5 text-center text-xs font-medium text-red-600 dark:text-red-400">
+          {promoText}
+        </h1>
+      )}
     </Form>
   );
 }
