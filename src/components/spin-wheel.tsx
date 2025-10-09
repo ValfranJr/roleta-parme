@@ -105,7 +105,7 @@ export function SpinWheel({
             >
               {/* Texto do Segmento */}
               <span
-                className="absolute text-white font-bold text-sm text-center"
+                className="absolute text-white font-bold text-xs text-center"
                 style={{
                   // Posiciona o texto para fora do centro e o rotaciona de volta para ficar horizontal
                   // Ajustei o translateY para uma posição mais adequada
